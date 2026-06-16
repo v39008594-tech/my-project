@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html>
+
+    <head>
+        <title>The Hawkins Labyrinth</title>
+        <link rel="stylesheet" href="style.css">
+    
+
+    </head>
+    <body>
+        <h1>The Hawkins Labyrinth</h1>
+        <h2 class="hawk">"Hawkins has been fractured. You are trapped in a shifting 5x5 labyrinth that blurs the line between our world and the Upside Down. Your only hope is to navigate the grid, survive the toxic environment, and find the exit. But be warned: Vecna is gathering strength. The longer you stay in the labyrinth, the more powerful he becomes. You must balance speed with survival, because if he outgrows your remaining health by the time you reach the gate, it stays open forever."</h2>
+       
+        <h3>Rules of the game are:
+            <ul>
+                <li>Every turn,You roll a digital die (generating a random number from 1 to 10)</li>
+                <li>The player can only move to adjacent, connecting blocks (Up, Down, Left, Right)</li>
+                <li>Every hidden block has a randomly generated "Unlock Requirement" number (1-10) assigned to it</li>
+                <li>To move into a new hidden block, the player's die roll must be greater than or equal to the block's Unlock Requirement. If the roll fails, the turn ends.</li>
+            </ul>
+        </h3>
+        <h4 class="four">🔴 Red Cell — Your current location within the labyrinth. This is where you stand as you navigate between Hawkins and the Upside Down.
+               <br>     🔵 Blue Cell — A path you've already explored. These locations are safe to revisit without rolling the die again.
+            <br>        🟢 Green Cell — Reachable passages revealed by your latest die roll. Choose one to continue your journey through the labyrinth.</h4>
+              <h3 id="five"></h3>  
+             <h2 id="one">Player health:150Hp</h2>
+             <h2 id="two">Vecna health:5Hp</h2>
+        <button onclick="gridgame()" class="three">roll the dice</button>
+        <p id="rolldice">value of the dice:</p>
+        <p id="land">World</p>
+        <div id="gridcontainer"></div>
+        
+    </body>
+    <script>
+    
+            var box1 = document.getElementById("one")
+            var box2 = document.getElementById("two")
+            var gridcontainer = document.getElementById("gridcontainer")
+            var rolldice=document.getElementById("rolldice")
+            var board = []
+            var land=document.getElementById("land")
+            var five=document.getElementById("five")
+            for(let i=0;i<5;i++){
+                board[i]=[]
+
+                for(let j=0;j<5;j++){
+
+                var cell = document.createElement("div")
+                cell.classList.add("cell")
+
+                gridcontainer.appendChild(cell)
+
+                board[i][j] = {
+                element: cell,
+                number: Math.floor(Math.random()*11),
+                status: "locked",
+                specialstatus: "closed",
+                world: Math.random()<0.3 ? "upsidedown" : "real"
+        }
+    }
+}
+        var gameover=false
+        var row = 4
+        var column = 0
+
+        var count = 150
+        var num = 5
+        
+        board[row][column].status = "unlocked"
+
+        var exitRow, exitCol
+
+        do{
+            exitRow = Math.floor(Math.random()*5)
+            exitCol = Math.floor(Math.random()*5)
+    }
+    while(exitRow===4 && exitCol===0)
+
+        board[exitRow][exitCol].specialstatus="exitway"
+
+        board[row][column].element.style.backgroundColor="red"
+
+        function checkCurrentCell(){
+
+            if(board[row][column].world==="upsidedown"){
+                count -= 18
+                 
+                board[row][column].element.style.backgroundColor = "#2b0033";
+                board[row][column].element.style.boxShadow = "0 0 15px #8b0000";
+                board[row][column].element.style.color = "white";
+
+                land.textContent="You step into the Upside Down. The air feels toxic and unfamiliar."
+                box1.textContent = "Player health:"+count+"Hp"
+
+                board[row][column].world="visited"
+    }
+            else if(board[row][column].world==="real"){
+                board[row][column].element.style.backgroundColor = "#00ffcc";
+                board[row][column].element.style.boxShadow = "0 0 15px #00ffcc";
+                board[row][column].element.style.color = "black";
+                land.textContent="The surroundings look familiar again—you are back in Hawkins."
+            }
+
+            if(board[row][column].specialstatus==="exitway"){
+
+                if(count>num){
+                    alert("you won it...")
+                    five.innerHTML="Against all odds, you outpaced Vecna and found the exit.<br>Summary:your health:"+count+"<br>vecna health:"+num
+                    clearInterval(timer);
+                    timer = null;
+                    gameover=true
+            }
+                else{
+                    alert("you lost the game..")
+                    five.innerHTML="Your strength fades as Vecna surpasses you. Game Over.<br>Summary:your health:"+count+"<br>vecna health:"+num
+                    clearInterval(timer);
+                    timer = null;
+                    gameover=true
+        }
+    }
+}
+
+        function moveTo(newRow,newCol){
+
+            board[row][column].element.style.backgroundColor="blue"
+
+            row = newRow
+            column = newCol
+
+            board[row][column].status="unlocked"
+            board[row][column].element.style.backgroundColor="red"
+
+            checkCurrentCell()
+            enableUnlockedNeighbours()
+}
+
+        function enableUnlockedNeighbours(){
+
+            if(row>0 && board[row-1][column].status==="unlocked"){
+                board[row-1][column].element.onclick=function(){
+                moveTo(row-1,column)
+        }
+    }
+
+            if(row<4 && board[row+1][column].status==="unlocked"){
+                board[row+1][column].element.onclick=function(){
+                moveTo(row+1,column)
+        }
+    }
+
+            if(column>0 && board[row][column-1].status==="unlocked"){
+                board[row][column-1].element.onclick=function(){
+                moveTo(row,column-1)
+        }
+    }
+
+            if(column<4 && board[row][column+1].status==="unlocked"){
+                board[row][column+1].element.onclick=function(){
+                moveTo(row,column+1)
+        }
+    }
+}
+
+        function clearMoves(){
+
+            for(let i=0;i<5;i++){
+                for(let j=0;j<5;j++){
+
+                 if(board[i][j].element.style.backgroundColor==="green"){
+                    board[i][j].element.style.backgroundColor=""
+                    board[i][j].element.onclick=null
+            }
+        }
+    }
+
+    enableUnlockedNeighbours()
+}
+
+        function unlockCell(r,c,movemadeRef){
+
+            board[r][c].element.style.backgroundColor="green"
+
+            board[r][c].element.onclick=function(){
+
+            if(movemadeRef.done){
+            return
+        }
+
+            movemadeRef.done=true
+
+            clearMoves()
+
+            moveTo(r,c)
+    }
+}
+        var intervalStarted=false
+
+        function gridgame(){
+            if(gameover)
+        {
+            return
+        }
+
+            startTimer();
+
+           
+
+            var usernumber = Math.floor(Math.random()*11)
+
+            rolldice.textContent="value of dice is:"+usernumber
+
+    
+
+            var movemade = {done:false}
+
+            if(row>0){
+
+                if(board[row-1][column].status==="locked"){
+
+                if(usernumber >= board[row-1][column].number){
+                unlockCell(row-1,column,movemade)
+            }
+        }
+    }
+
+    if(row<4){
+
+        if(board[row+1][column].status==="locked"){
+
+            if(usernumber >= board[row+1][column].number){
+                unlockCell(row+1,column,movemade)
+            }
+        }
+    }
+
+    if(column>0){
+
+        if(board[row][column-1].status==="locked"){
+
+            if(usernumber >= board[row][column-1].number){
+                unlockCell(row,column-1,movemade)
+            }
+        }
+    }
+
+    if(column<4){
+
+        if(board[row][column+1].status==="locked"){
+
+            if(usernumber >= board[row][column+1].number){
+                unlockCell(row,column+1,movemade)
+            }
+        }
+    }
+
+    enableUnlockedNeighbours()
+}
+
+enableUnlockedNeighbours()
+         var timer = null;
+
+        function startTimer(){
+
+             if(timer === null){
+
+                timer = setInterval(function(){
+                num++;
+                box2.textContent = "Vecna health:" + num + "Hp";
+            },1000);
+
+    }
+}
+
+
+
+</script>
+
+</html>

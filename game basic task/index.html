@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html>
+
+<head>
+<title>King of Diamonds</title>
+<link rel="stylesheet" href="style.css">
+
+
+
+</head>
+
+
+<body>
+
+
+<h1>The King of Diamonds</h1>
+<h3 class="one">"The visa lasers are armed, and the King of Diamonds demands an audience. Welcome to the
+'Keynesian Beauty Contest'. There is no physical escape here—only the cold, hard reality of game
+theory and mathematics. You are trapped in a psychological numbers game and to survive, you
+don't just need to know the rules; you must anticipate the collective behavior of your enemies.
+Write the code and prove you are the King of Diamonds."</h3>
+
+
+<input type="number" id="userinput" min="0" max="100">
+
+<br>
+
+<button onclick="check()">Submit</button>
+
+
+<div id="result"></div>
+
+
+
+<script>
+
+
+var result=document.getElementById("result")
+
+
+var players=[
+
+{
+name:"user",
+number:0,
+lives:3,
+alive:true
+},
+
+{
+name:"bot1",
+number:0,
+lives:3,
+alive:true
+},
+
+{
+name:"bot2",
+number:0,
+lives:3,
+alive:true
+},
+
+{
+name:"bot3",
+number:0,
+lives:3,
+alive:true
+}
+
+]
+
+
+
+
+
+function check(){
+
+
+while(true){
+
+
+var box1value=Number(document.getElementById("userinput").value)
+
+
+
+
+
+for(var player of players){
+
+
+if(player.alive){
+
+
+if(player.name=="user"){
+
+player.number=box1value
+
+}
+
+else{
+
+player.number=Math.floor(Math.random()*101)
+
+}
+
+
+}
+
+
+}
+
+
+
+
+
+var total=0
+
+var aliveplayers=0
+
+
+
+for(var player of players){
+
+
+if(player.alive==true){
+
+total+=player.number
+
+aliveplayers++
+
+}
+
+
+}
+
+
+
+var average=total/aliveplayers
+
+var target=average*0.8
+
+
+
+var closest=0
+
+var minDistance=999999
+
+
+for(var player of players){
+
+
+if(player.alive){
+
+
+var distance=Math.abs(player.number-target)
+
+
+if(distance<minDistance){
+
+minDistance=distance
+closest=player.number
+
+}
+
+
+}
+
+
+}
+
+
+
+
+
+var winner=""
+
+
+for(var player of players){
+
+
+if(player.alive){
+
+
+if(player.number==closest){
+
+winner=player.name
+
+}
+
+else{
+
+player.lives--
+
+}
+
+
+}
+
+
+}
+
+
+
+
+
+for(var player of players){
+
+
+if(player.lives==0){
+
+player.alive=false
+
+}
+
+
+}
+
+
+
+
+
+var text=
+"user chosen number:"+players[0].number+
+"<br>bot1 has chosen:"+players[1].number+
+"<br>bot2 has chosen:"+players[2].number+
+"<br>bot3 has chosen:"+players[3].number+
+"<br><br>Target number: "+target+
+"<br>Winner: "+winner+
+
+"<br><br>"
+
+
+
+for(var player of players){
+
+
+text+=
+
+player.name+
+" : "+
+player.number+
+" ❤️ "+
+player.lives+
+(player.alive ? " alive":" eliminated")
++
+"<br>"
+
+
+}
+
+
+
+result.innerHTML=text
+
+
+
+
+
+
+
+
+if(players[0].alive==false){
+
+result.innerHTML+="<br>GAME OVER YOU LOST"
+return
+
+}
+
+
+
+
+
+
+var botsalive=0
+
+
+for(var i=1;i<players.length;i++){
+
+
+if(players[i].alive){
+
+botsalive++
+
+}
+
+
+}
+
+
+
+
+if(botsalive==0){
+
+result.innerHTML+="<br>YOU WON THE GAME"
+
+return
+
+}
+
+
+break
+
+}
+
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
+
